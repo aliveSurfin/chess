@@ -54,6 +54,8 @@ function displayPieces() {
                 console.log(board[y][x]);
                 curPiece.draggable = true;
                 curPiece.ondragstart = (ev) => {
+                    selectionUnHighlighting()
+                    selected = null
                     ev.dataTransfer.setData("text", ev.target.parentNode.id);
                     console.log(ev.target.width);
                     let test = new Image(ev.target.width / 2, ev.target.width / 2)
