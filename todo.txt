@@ -1,0 +1,11 @@
+TODO;
+
+change chess internals to chess.js
+
+- finish multiplayer functionality
+	valid/invalid moves
+	draw/win/loss
+	check/checkmate indicators
+	resign/draw
+
+fix dissapearing pieces - drop event on everything but pieces - done
