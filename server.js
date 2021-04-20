@@ -100,7 +100,7 @@ io.on('connection', function (socket) {
         let moveReturn = state.games[state.players[socket.id].game].game.move({ from: source, to: target })
         if (moveReturn == null) {
             console.log("invalid move");
-            io.to(socket.id).emit('updated board', createGameState(state.games[state.players[socket.id].game]))
+            io.to(socket.id).emit('updated board', createGameState(state.games[state.players[socket.id].game], socket.id))
             return
         }
         //TODO valid move check

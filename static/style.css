@@ -52,12 +52,12 @@
     font-weight: 900
 }
 
+
+/* 
 .row:first-child .Square::before,
 .row:last-child .Square:after {
     content: attr(data-col);
     color: black;
-    cursor: pointer;
-    /* margin: auto; */
     font-weight: 900;
     position: absolute;
     text-align: center;
@@ -74,7 +74,7 @@
     top: -20px;
     left: 50%;
     transform: translate(-50%, -50%);
-}
+} */
 
 .Square img {
     position: absolute;

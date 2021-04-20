@@ -30,13 +30,15 @@ socket.on('game started', (gameState) => {
     displayEmptyBoard()
     console.log(gameState);
     displayPieces()
-
-    // document.body.innerHTML += `<div> ${}</div>`
 })
+
 function displayPieces() {
     let board = state.board
-    for (let y = 0; y < 8; y++) {
-        for (let x = 0; x < 8; x++) {
+    let min = state.playerColour== "black" ? 7 : 0
+    let max = state.playerColour== "black" ? -1 : 8
+    let increment = state.playerColour== "black" ? -1 : 1
+    for (let y = min; y != max; y+=increment) {
+        for (let x = min; x != max; x+=increment) {
             let curSquare = document.getElementById(`${y}${x}`)
             curSquare.innerHTML = ``
             if (board[y][x] == null) {
@@ -58,17 +60,17 @@ function displayPieces() {
                     selected = null
                     ev.dataTransfer.setData("text", ev.target.parentNode.id);
                     console.log(ev.target.width);
-                    let test = new Image(ev.target.width / 2, ev.target.width / 2)
-                    test.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
-                    test.src = `/static/assets/images/pieces/${curPieceName}.png`
-                    console.log(ev.target.src);
-                    console.log(ev.target.src);
-                    console.log(test);
-                    var div = document.createElement('div');
-                    div.id = "temp"
-                    div.appendChild(test);
-                    document.querySelector('body').appendChild(div);
-                    ev.dataTransfer.setDragImage(div, 0, 0)
+                    // let test = new Image(ev.target.width / 2, ev.target.width / 2)
+                    // test.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+                    // test.src = `/static/assets/images/pieces/${curPieceName}.png`
+                    // console.log(ev.target.src);
+                    // console.log(ev.target.src);
+                    // console.log(test);
+                    // var div = document.createElement('div');
+                    // div.id = "temp"
+                    // div.appendChild(test);
+                    // document.querySelector('body').appendChild(div);
+                    // ev.dataTransfer.setDragImage(div, 0, 0)
                     //var elem = document. getElementById("temp"); elem. remove();
                     //console.log(ev);
                     curPiece.style.opacity = 0.5
@@ -166,7 +168,10 @@ socket.on('lobby list', (players) => {
 })
 socket.on('updated board', (updatedBoard) => {
     console.log("got move");
+    console.log(state);
+    console.log(updatedBoard);
     state = updatedBoard
+    displayEmptyBoard()
     displayPieces()
 })
 socket.on('attacks', (attacks) => {
@@ -227,14 +232,17 @@ function displayEmptyBoard() {
     let boardDiv = document.getElementById("board")
     boardDiv.innerHTML = ``
     boardDiv.style.display = "grid"
-    for (let y = 0; y < 8; y++) {
+    let min = state.playerColour== "black" ? 7 : 0
+    let max = state.playerColour== "black" ? -1 : 8
+    let increment = state.playerColour== "black" ? -1 : 1
+    for (let y = min; y != max; y+= increment) {
         let row = document.createElement("div")
         row.className = "row"
         row.setAttribute('data-row', (8 + 1) - (y + 1))
         boardDiv.appendChild(row)
         let startColour = !(y % 2) ? "white" : "black"
         let notStartColour = (y % 2) ? "white" : "black"
-        for (let x = 0; x < 8; x++) {
+        for (let x = min; x != max; x+= increment) {
             let curSquare = document.createElement("div")
             let colour = !(x % 2) ? startColour : notStartColour
             curSquare.className = `Square ${colour}`
