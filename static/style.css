@@ -140,3 +140,39 @@
 /* .attacked {
     filter: invert(11%) sepia(100%) saturate(6678%) hue-rotate(360deg) brightness(106%) contrast(111%);
 } */
+
+
+/* LOBBY*/
+
+.lobby-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border: 1px solid black;
+    text-align: center;
+    padding-top: 1vmin;
+    padding-bottom: 1vmin;
+}
+
+.lobby-item>.lobby-prefs {
+    width: 3vmin;
+    height: 3vmin;
+    margin: auto;
+}
+
+.lobby-item>.lobby-prefs.white {
+    border: 1px solid black;
+    background-color: white;
+}
+
+.lobby-item>.lobby-prefs.black {
+    border: 1px solid black;
+    background-color: black;
+}
+
+.lobby-item>.lobby-prefs.any {
+    border: 1px solid black;
+    background: yellow;
+    background: -moz-linear-gradient(left, black 0%, white 50%);
+    background: -webkit-linear-gradient(left, black 0%, white 50%);
+    background: linear-gradient(to right, black 0%, white 50%);
+}

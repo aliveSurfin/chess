@@ -1,5 +1,3 @@
-
-
 // 'n' - a non-capture
 // 'b' - a pawn push of two squares
 // 'e' - an en passant capture
@@ -7,16 +5,27 @@
 // 'p' - a promotion
 // 'k' - kingside castling
 // 'q' - queenside castling
-
+import LobbyItemView from './View/lobby/LobbyItemView.js'
+import LobbyView from './View/lobby/LobbyView.js'
+// let test = new LobbyItemView({id:"id",name:"name",prefs:{colour:"any"}},(e)=>{console.log(e);})
+// console.log(test);
+// document.body.appendChild(test)
+// test = new LobbyItemView({id:"id",name:"name",prefs:{colour:"black"}},(e)=>{console.log(e);})
+// console.log(test);
+// document.body.appendChild(test)
+// test = new LobbyItemView({id:"id",name:"name",prefs:{colour:"white"}},(e)=>{console.log(e);})
+// console.log(test);
+// document.body.appendChild(test)
+let lobby = new LobbyView()
+document.body.appendChild(lobby.lobbyContainer)
 let socket = io()
-let state = {
-}
+let state = {}
 let selected = null
 socket.emit('new player')
-socket.on('joined', () => {
+socket.on('joined', (player) => {
     console.log(socket.id);
     let h1 = document.createElement('h1')
-    h1.innerText = socket.id
+    h1.innerText = player.name
     document.body.appendChild(h1)
 })
 
@@ -34,11 +43,11 @@ socket.on('game started', (gameState) => {
 
 function displayPieces() {
     let board = state.board
-    let min = state.playerColour== "black" ? 7 : 0
-    let max = state.playerColour== "black" ? -1 : 8
-    let increment = state.playerColour== "black" ? -1 : 1
-    for (let y = min; y != max; y+=increment) {
-        for (let x = min; x != max; x+=increment) {
+    let min = state.playerColour == "black" ? 7 : 0
+    let max = state.playerColour == "black" ? -1 : 8
+    let increment = state.playerColour == "black" ? -1 : 1
+    for (let y = min; y != max; y += increment) {
+        for (let x = min; x != max; x += increment) {
             let curSquare = document.getElementById(`${y}${x}`)
             curSquare.innerHTML = ``
             if (board[y][x] == null) {
@@ -101,6 +110,7 @@ function displayPieces() {
         }
     }
 }
+
 function highlightSquare(target) {
     //console.log(target);
 
@@ -117,6 +127,7 @@ function highlightSquare(target) {
     //return { y, x }
 
 }
+
 function unHighlightSquare(target) {
     console.log(target);
     let square = document.getElementById(`${target.y}${target.x}`)
@@ -129,6 +140,7 @@ function unHighlightSquare(target) {
     square.classList.remove('possible')
 
 }
+
 function selectionHighlighting() {
     if (selected === null) {
         return
@@ -140,6 +152,7 @@ function selectionHighlighting() {
     })
 
 }
+
 function selectionUnHighlighting() {
     if (selected === null) {
         return
@@ -154,17 +167,18 @@ socket.on('opponent left', () => {
     console.log("player left game");
 })
 socket.on('lobby list', (players) => {
+    console.log(players);
+    lobby.updateLobbyList(players)
+    // let playerlist = document.getElementById("player-list")
+    // playerlist.innerHTML = ''
+    // for (let player in players) {
+    //     console.log(player);
 
-    let playerlist = document.getElementById("player-list")
-    playerlist.innerHTML = ''
-    for (let player in players) {
-        console.log(player);
-
-        let curPlayerItem = document.createElement('li')
-        curPlayerItem.innerText = player
-        curPlayerItem.style = player == socket.id ? "color:red" : ""
-        playerlist.appendChild(curPlayerItem)
-    }
+    //     let curPlayerItem = document.createElement('li')
+    //     curPlayerItem.innerText = player
+    //     curPlayerItem.style = player == socket.id ? "color:red" : ""
+    //     playerlist.appendChild(curPlayerItem)
+    // }
 })
 socket.on('updated board', (updatedBoard) => {
     console.log("got move");
@@ -185,23 +199,24 @@ socket.on('attacks', (attacks) => {
                 return
             }
             atkSquare.onclick = () => {
-                console.log("clicked");
-                console.log(curAtks);
-                for (let i = 0; i < curAtks.length; i++) {
-                    let atk = curAtks[i]
-                    let test = document.getElementById(`${atk.y}${atk.x}`)
-                    console.log(test);
-                    if (!test.classList.contains('attacked')) {
-                        test.classList.add('attacked')
+                    console.log("clicked");
+                    console.log(curAtks);
+                    for (let i = 0; i < curAtks.length; i++) {
+                        let atk = curAtks[i]
+                        let test = document.getElementById(`${atk.y}${atk.x}`)
+                        console.log(test);
+                        if (!test.classList.contains('attacked')) {
+                            test.classList.add('attacked')
+                        }
                     }
                 }
-            }
-            // if (!atkSquare.classList.contains('attacked')) {
-            //     atkSquare.classList.add('attacked')
-            // }
+                // if (!atkSquare.classList.contains('attacked')) {
+                //     atkSquare.classList.add('attacked')
+                // }
         }
     }
 })
+
 function move(piece, source, target) {
     console.log(piece, source, target);
     let sourceARR = source.id.split("").map((e) => { return parseInt(e) })
@@ -223,42 +238,43 @@ function move(piece, source, target) {
     //TODO: flag checking for || castling (queenside ) (kingside)
     target.appendChild(piece)
     source.innerHTML = ''
-    //console.log(target);
+        //console.log(target);
     state.curColour = state.curColour == "white" ? "black" : "white"
     socket.emit('move', { source: sourceARR, target: targetARR })
     return true
 }
+
 function displayEmptyBoard() {
     let boardDiv = document.getElementById("board")
     boardDiv.innerHTML = ``
     boardDiv.style.display = "grid"
-    let min = state.playerColour== "black" ? 7 : 0
-    let max = state.playerColour== "black" ? -1 : 8
-    let increment = state.playerColour== "black" ? -1 : 1
-    for (let y = min; y != max; y+= increment) {
+    let min = state.playerColour == "black" ? 7 : 0
+    let max = state.playerColour == "black" ? -1 : 8
+    let increment = state.playerColour == "black" ? -1 : 1
+    for (let y = min; y != max; y += increment) {
         let row = document.createElement("div")
         row.className = "row"
         row.setAttribute('data-row', (8 + 1) - (y + 1))
         boardDiv.appendChild(row)
         let startColour = !(y % 2) ? "white" : "black"
         let notStartColour = (y % 2) ? "white" : "black"
-        for (let x = min; x != max; x+= increment) {
+        for (let x = min; x != max; x += increment) {
             let curSquare = document.createElement("div")
             let colour = !(x % 2) ? startColour : notStartColour
             curSquare.className = `Square ${colour}`
-            //curSquare.id = `${String.fromCharCode(97 + x)}${((8 + 1) - (y + 1))}`
+                //curSquare.id = `${String.fromCharCode(97 + x)}${((8 + 1) - (y + 1))}`
             curSquare.id = `${y}${x}`
             curSquare.onclick = () => {
-                if (state.curColour != state.playerColour) {
-                    return
+                    if (state.curColour != state.playerColour) {
+                        return
+                    }
+                    var msg = new SpeechSynthesisUtterance();
+                    msg.text = curSquare.id.split("").join(" ");
+                    //window.speechSynthesis.speak(msg);
+                    //TODO: ADD SPEACH FUNCTIONALITY
+                    console.log(msg.text);
                 }
-                var msg = new SpeechSynthesisUtterance();
-                msg.text = curSquare.id.split("").join(" ");
-                //window.speechSynthesis.speak(msg);
-                //TODO: ADD SPEACH FUNCTIONALITY
-                console.log(msg.text);
-            }
-            // curPiece.innerText = board[y][x].type
+                // curPiece.innerText = board[y][x].type
             curSquare.ondragover = (e) => {
                 if (state.curColour != state.playerColour) {
                     return
@@ -321,8 +337,7 @@ function displayEmptyBoard() {
                         selected = null
                     }
                     // console.log(previous);
-                }
-                else {
+                } else {
                     selectionUnHighlighting()
                     selected = null
                     console.log(board[y][x]);

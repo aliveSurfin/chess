@@ -5,6 +5,7 @@ try {
     console.log("ES6 not supported :(")
 }
 var express = require('express');
+const { uniqueNamesGenerator, adjectives, colors, animals } = require('unique-names-generator');
 var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
@@ -18,12 +19,12 @@ app.use('/static', express.static(__dirname + '/static'));
 
 
 // Routing
-app.get('/', function (request, response) {
-    response.sendFile(path.join(__dirname, 'index.html'));
+app.get('/', function(request, response) {
+    response.sendFile(path.join(__dirname, '/static/index.html'));
 });
 
 // Starts the server.
-server.listen(PORT_NO, function () {
+server.listen(PORT_NO, function() {
     console.log('Starting server on port ' + PORT_NO);
 });
 
@@ -37,16 +38,21 @@ const state = {
     games: {}
 
 }
-io.on('connection', function (socket) {
+io.on('connection', function(socket) {
 
-    socket.on('new player', function () {
+    socket.on('new player', function() {
+        let capitalizedName = uniqueNamesGenerator({
+            dictionaries: [adjectives, colors, animals],
+            style: 'capital'
+        }); // Red_Big_Donkey
         state.players[socket.id] = {
             id: socket.id,
+            name: capitalizedName
         };
         console.log("user connect", state.players);
         // io.emit('player list', state.players)
         io.to(socket.id).emit('lobby list', state.lobby)
-        io.to(socket.id).emit('joined')
+        io.to(socket.id).emit('joined', state.players[socket.id])
     });
     socket.on('disconnect', () => {
         console.log("user disconnect", socket.id);
@@ -79,13 +85,13 @@ io.on('connection', function (socket) {
         }
         //TODO: valid move checking
         let curGame = state.games[state.players[socket.id].game]
-        // console.log(curGame);
-        // console.log(Object.keys(curGame));
-        // console.log(Object.values(curGame));
-        // console.log(socket.id);
-        // console.log(Object.values(curGame).indexOf(socket.id));
+            // console.log(curGame);
+            // console.log(Object.keys(curGame));
+            // console.log(Object.values(curGame));
+            // console.log(socket.id);
+            // console.log(Object.values(curGame).indexOf(socket.id));
         let playerColour = Object.keys(curGame)[Object.values(curGame).indexOf(socket.id)]
-        //console.log(playerColour);
+            //console.log(playerColour);
         console.log(playerColour);
         console.log(curGame.curColour);
         if (playerColour != curGame.curColour) {
@@ -114,16 +120,30 @@ io.on('connection', function (socket) {
 
 
     })
+
+    function addToLobby(id, prefs) {
+
+        let lobbyItem = {
+            id,
+            prefs,
+            name: state.players[id].name
+        }
+        console.log(state.lobby);
+        state.lobby[id] = lobbyItem
+            //TODO: make class
+    }
     socket.on('join lobby', (prefs) => {
         //TODO: pref checking
         //TODO: check if player exists 
         //TODO: check if player is in game
         //TODO: check if player is in lobby
+        console.log(state.lobby);
         console.log(prefs);
         prefs = { colour: prefs.colour || "any" }
-
+        console.log(prefs);
+        console.log("test");
         if (!Object.keys(state.lobby).length) {
-            state.lobby[socket.id] = prefs
+            addToLobby(socket.id, prefs)
             io.emit("lobby list", state.lobby)
             return
         }
@@ -135,7 +155,7 @@ io.on('connection', function (socket) {
         } else {
             let possible = false
             for (pl in state.lobby) {
-                if (state.lobby[pl].colour != prefs.colour) {
+                if (state.lobby[pl].prefs.colour != prefs.colour) {
                     selectedOpponent = pl
                     console.log("aa");
                     possible = true
@@ -143,7 +163,7 @@ io.on('connection', function (socket) {
                 }
             }
             if (!possible) {
-                state.lobby[socket.id] = prefs
+                addToLobby(socket.id, prefs)
                 console.log("not possible");
                 io.emit("lobby list", state.lobby)
                 return
@@ -153,11 +173,12 @@ io.on('connection', function (socket) {
         let game = {
             white: "",
             black: "",
-            game: new Chess(),//TODO: custom fen
+            game: new Chess(), //TODO: custom fen
             curColour: "white",
         }
 
-        let oppPrefs = state.lobby[selectedOpponent]
+        let oppPrefs = state.lobby[selectedOpponent].prefs
+        console.log("oppPrefs", oppPrefs);
 
         game.white = prefs.colour == "white" ? socket.id : oppPrefs.colour == "white" ? selectedOpponent : ""
         game.black = prefs.colour == "black" ? socket.id : oppPrefs.colour == "black" ? selectedOpponent : ""
@@ -204,6 +225,7 @@ io.on('connection', function (socket) {
 
 
 })
+
 function createGameState(game, player) {
     let board = game.game.board()
     for (let y = 0; y < board.length; y++) {
