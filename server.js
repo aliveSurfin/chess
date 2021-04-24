@@ -132,6 +132,20 @@ io.on('connection', function(socket) {
         state.lobby[id] = lobbyItem
             //TODO: make class
     }
+
+    function validatePrefs(prefs) {
+        if (prefs) {
+            if (prefs == "white") {
+                return "white"
+            }
+            if (prefs == "black") {
+                return "black"
+            }
+
+        }
+        return "any"
+
+    }
     socket.on('join lobby', (prefs) => {
         //TODO: pref checking
         //TODO: check if player exists 
@@ -139,7 +153,7 @@ io.on('connection', function(socket) {
         //TODO: check if player is in lobby
         console.log(state.lobby);
         console.log(prefs);
-        prefs = { colour: prefs.colour || "any" }
+        prefs = { colour: validatePrefs(prefs) }
         console.log(prefs);
         console.log("test");
         if (!Object.keys(state.lobby).length) {
