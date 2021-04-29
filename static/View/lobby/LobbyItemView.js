@@ -12,7 +12,7 @@ export default class LobbyItemView {
     createLobbyItemElement(callback, playerID) {
         let element = ViewHelpers.createElementWithClassName('div', 'lobby-item')
 
-        let name = ViewHelpers.createElementWithClassName('div', 'lobby-name')
+        let name = ViewHelpers.createElementWithClassName('span', 'lobby-name')
         name.innerText = this.name
 
         let prefs = ViewHelpers.createElementWithClassName('div', `lobby-prefs ${this.prefs.colour}`)
@@ -28,7 +28,7 @@ export default class LobbyItemView {
         if (this.id !== playerID) {
             element.appendChild(challengeButton)
         } else {
-            this.element.classList.add('own')
+            element.classList.add('own')
         }
         return element
 

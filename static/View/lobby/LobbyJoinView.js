@@ -8,18 +8,32 @@ export default class LobbyJoinView {
     createLobbyJoinElement(callback) {
         let element = ViewHelpers.createElementWithClassName('div', 'lobby-join-container')
         let values = ['any', 'white', 'black']
-
-        let select = ViewHelpers.createElementWithClassName('select', 'lobby-join-prefs-select')
+        this.valueElements = []
+        this.selected = 'any'
+        let select = ViewHelpers.createElementWithClassName('div', 'lobby-join-prefs-container')
         values.forEach((e) => {
-            let option = ViewHelpers.createElementWithClassName('option', `lobby-join-prefs-option ${e}`)
+            let option = ViewHelpers.createElementWithClassName('div', `lobby-join-prefs-option ${e}`)
+            if (e == this.selected) {
+                option.classList.add('selected')
+            }
             option.innerText = e
             option.value = e
+            option.onclick = () => {
+                this.selected = e
+                this.valueElements.forEach((element) => {
+                    element.classList.remove('selected')
+                    if (element.value == e) {
+                        element.classList.add('selected')
+                    }
+                })
+            }
             select.appendChild(option)
+            this.valueElements.push(option)
         })
 
         let joinButton = ViewHelpers.createElementWithClassName('div', 'lobby-join-button')
         joinButton.innerText = "Join"
-        joinButton.onclick = () => { callback(select.value) }
+        joinButton.onclick = () => { callback(this.selected) }
 
 
         element.appendChild(select)

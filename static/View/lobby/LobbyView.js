@@ -3,14 +3,22 @@ import LobbyJoinView from './LobbyJoinView.js'
 import ViewHelpers from '../ViewHelpers.js'
 
 export default class LobbyView {
-    constructor(challengeCallback,joinCallback,playerID) {
+    constructor(challengeCallback, joinCallback, player, parent) {
 
-        
-        this.playerID = playerID
+
+        this.player = player
         this.challengeCallback = challengeCallback
-        
+        this.parent = parent
         this.joinCallback = joinCallback
+        console.log(parent);
         this.createLobbyElement()
+    }
+    show() {
+        this.hide()
+        this.parent.appendChild(this.lobbyContainer)
+    }
+    hide() {
+        this.parent.innerHTML = ''
     }
     createLobbyElement() {
         this.lobbyContainer = ViewHelpers.createElementWithClassName('div', 'lobby-container')
@@ -29,10 +37,11 @@ export default class LobbyView {
     updateLobbyList(lobbyList) {
         console.log(lobbyList);
         this.lobbyList.innerHTML = ``
-        for (let player in lobbyList){
-            let element = lobbyList[player]
-            this.lobbyList.appendChild(new LobbyItemView(element,this.challengeCallback,this.playerID))
+            //TODO: add empty case
+        for (let lobbyPlayer in lobbyList) {
+            let element = lobbyList[lobbyPlayer]
+            this.lobbyList.appendChild(new LobbyItemView(element, this.challengeCallback, this.player.id))
         }
-        
+
     }
 }

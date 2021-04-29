@@ -51,8 +51,9 @@ io.on('connection', function(socket) {
         };
         console.log("user connect", state.players);
         // io.emit('player list', state.players)
-        io.to(socket.id).emit('lobby list', state.lobby)
         io.to(socket.id).emit('joined', state.players[socket.id])
+        io.to(socket.id).emit('lobby list', state.lobby)
+
     });
     socket.on('disconnect', () => {
         console.log("user disconnect", socket.id);
@@ -101,12 +102,12 @@ io.on('connection', function(socket) {
 
         }
         console.log();
-        let source = curGame.game.SQUARES[(move.source[0] * 8) + move.source[1]]
-        let target = curGame.game.SQUARES[(move.target[0] * 8) + move.target[1]]
+        let source = curGame.game.SQUARES[(move.source.y * 8) + move.source.x]
+        let target = curGame.game.SQUARES[(move.target.y * 8) + move.target.x]
         let moveReturn = state.games[state.players[socket.id].game].game.move({ from: source, to: target })
         if (moveReturn == null) {
             console.log("invalid move");
-            io.to(socket.id).emit('updated board', createGameState(state.games[state.players[socket.id].game], socket.id))
+            io.to(socket.id).emit('updated board', createGameState(state.games[state.players[socket.id].game], socket.id, 'Invalid move made'), )
             return
         }
         //TODO valid move check
@@ -240,7 +241,7 @@ io.on('connection', function(socket) {
 
 })
 
-function createGameState(game, player) {
+function createGameState(game, player, status) {
     let board = game.game.board()
     for (let y = 0; y < board.length; y++) {
         board[y] = board[y].map((square, x) => {
@@ -252,7 +253,20 @@ function createGameState(game, player) {
             return square
         })
     }
-    let gameState = { board: board, curColour: game.curColour, playerColour: game.white == player ? "white" : "black" }
+    let gameState = {
+        board: board,
+        curColour: game.curColour,
+        playerColour: game.white == player ? "white" : "black",
+        gameOver: game.game.game_over(),
+        inCheck: game.game.in_check(),
+        inCheckmate: game.game.in_checkmate(),
+        inDraw: game.game.in_draw(),
+
+
+
+    }
+    gameState.status = status == undefined ?
+        (gameState.playerColour == gameState.curColour ? 'Your turn to make a move' : 'Wait for your turn') : status
     return gameState
 
 }

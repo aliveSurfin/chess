@@ -9,7 +9,7 @@ function isUpperCase(toTest) {
 const pieceMap = {
     "r": "Rook",
     "n": "Knight",
-    "b": "Bishop",
+    "black": "Bishop",
     "q": "Queen",
     "k": "King",
     "p": "Pawn",
@@ -35,7 +35,7 @@ class Chess {
         //black lowercase
         let fenArray = fenString.split(" ")
         let board = fenArray[0].split("/")
-        this.curColour = fenArray[1] == "w" ? "white" : "black"
+        this.curColour = fenArray[1] == "white" ? "white" : "black"
         this.castling = fenArray[2]
         this.enPassant = fenArray[3]
         this.halfmoveClock = fenArray[4]
@@ -72,12 +72,12 @@ class Chess {
                     continue
                 }
                 attacks[y][x] = this.pieceAttackGeneration(curPiece, y, x)
-                // "r": "Rook",
-                // "n": "Knight",
-                // "b": "Bishop",
-                // "q": "Queen",
-                // "k": "King",
-                // "p": "Pawn",
+                    // "r": "Rook",
+                    // "n": "Knight",
+                    // "black": "Bishop",
+                    // "q": "Queen",
+                    // "k": "King",
+                    // "p": "Pawn",
 
 
 
@@ -180,8 +180,8 @@ class Chess {
             }
         }
         if (attacks.length > 0) {
-           // console.log(curPiece);
-           console.log(origX,origY);
+            // console.log(curPiece);
+            console.log(origX, origY);
             console.log(attacks);
         }
         return attacks

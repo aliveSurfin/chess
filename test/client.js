@@ -132,11 +132,7 @@ function unHighlightSquare(target) {
     console.log(target);
     let square = document.getElementById(`${target.y}${target.x}`)
     console.log(square);
-    if (square.childNodes.length) {
-        // let piece = square.childNodes[0]
-        // piece.classList.remove('attacked')
-        square.classList.remove('attacked')
-    }
+    square.classList.remove('attacked')
     square.classList.remove('possible')
 
 }
@@ -199,20 +195,20 @@ socket.on('attacks', (attacks) => {
                 return
             }
             atkSquare.onclick = () => {
-                    console.log("clicked");
-                    console.log(curAtks);
-                    for (let i = 0; i < curAtks.length; i++) {
-                        let atk = curAtks[i]
-                        let test = document.getElementById(`${atk.y}${atk.x}`)
-                        console.log(test);
-                        if (!test.classList.contains('attacked')) {
-                            test.classList.add('attacked')
-                        }
+                console.log("clicked");
+                console.log(curAtks);
+                for (let i = 0; i < curAtks.length; i++) {
+                    let atk = curAtks[i]
+                    let test = document.getElementById(`${atk.y}${atk.x}`)
+                    console.log(test);
+                    if (!test.classList.contains('attacked')) {
+                        test.classList.add('attacked')
                     }
                 }
-                // if (!atkSquare.classList.contains('attacked')) {
-                //     atkSquare.classList.add('attacked')
-                // }
+            }
+            // if (!atkSquare.classList.contains('attacked')) {
+            //     atkSquare.classList.add('attacked')
+            // }
         }
     }
 })
@@ -238,7 +234,7 @@ function move(piece, source, target) {
     //TODO: flag checking for || castling (queenside ) (kingside)
     target.appendChild(piece)
     source.innerHTML = ''
-        //console.log(target);
+    //console.log(target);
     state.curColour = state.curColour == "white" ? "black" : "white"
     socket.emit('move', { source: sourceARR, target: targetARR })
     return true
@@ -262,19 +258,19 @@ function displayEmptyBoard() {
             let curSquare = document.createElement("div")
             let colour = !(x % 2) ? startColour : notStartColour
             curSquare.className = `Square ${colour}`
-                //curSquare.id = `${String.fromCharCode(97 + x)}${((8 + 1) - (y + 1))}`
+            //curSquare.id = `${String.fromCharCode(97 + x)}${((8 + 1) - (y + 1))}`
             curSquare.id = `${y}${x}`
             curSquare.onclick = () => {
-                    if (state.curColour != state.playerColour) {
-                        return
-                    }
-                    var msg = new SpeechSynthesisUtterance();
-                    msg.text = curSquare.id.split("").join(" ");
-                    //window.speechSynthesis.speak(msg);
-                    //TODO: ADD SPEACH FUNCTIONALITY
-                    console.log(msg.text);
+                if (state.curColour != state.playerColour) {
+                    return
                 }
-                // curPiece.innerText = board[y][x].type
+                var msg = new SpeechSynthesisUtterance();
+                msg.text = curSquare.id.split("").join(" ");
+                //window.speechSynthesis.speak(msg);
+                //TODO: ADD SPEACH FUNCTIONALITY
+                console.log(msg.text);
+            }
+            // curPiece.innerText = board[y][x].type
             curSquare.ondragover = (e) => {
                 if (state.curColour != state.playerColour) {
                     return

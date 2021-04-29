@@ -1,0 +1,10 @@
+.status-container {
+    border: 1px solid black;
+    display: grid;
+    grid-template-rows: 1fr 3fr;
+    padding: 1vmin;
+}
+
+.move-list {
+    border: 1px solid black;
+}

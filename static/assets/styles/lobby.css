@@ -1,0 +1,104 @@
+    .lobby-container {
+        /* background-color: blue; */
+        height: 100%;
+        border: 1px solid black;
+        display: grid;
+        grid-template-rows: 5fr 1fr;
+    }
+    
+    .lobby-list-container {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    
+    .lobby-item {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        border: 1px solid black;
+        text-align: center;
+        padding: 1vmin;
+    }
+    
+    .lobby-item.own {
+        border: 2px solid orangered;
+        background: orange;
+    }
+    
+    .lobby-item>.lobby-name {
+        vertical-align: middle;
+    }
+    
+    .lobby-item>.lobby-prefs {
+        width: 3vmin;
+        height: 3vmin;
+        margin: auto;
+    }
+    
+    .lobby-item>.lobby-prefs.white {
+        border: 1px solid black;
+        background-color: white;
+    }
+    
+    .lobby-item>.lobby-prefs.black {
+        border: 1px solid black;
+        background-color: black;
+    }
+    
+    .lobby-item>.lobby-prefs.any {
+        border: 1px solid black;
+        background: yellow;
+        background: -moz-linear-gradient(left, black 0%, white 50%);
+        background: -webkit-linear-gradient(left, black 0%, white 50%);
+        background: linear-gradient(to right, black 0%, white 50%);
+    }
+    
+    .lobby-item>.lobby-challenge {
+        border: 1px solid black;
+    }
+    /* lobby join */
+    
+    .lobby-join-container {
+        border: 1px solid black;
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+    }
+    
+    .lobby-join-prefs-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    
+    .lobby-join-prefs-option {
+        border: 1px solid black;
+        text-align: center;
+        text-transform: capitalize;
+        color: orangered
+    }
+    
+    .lobby-join-prefs-option.selected {
+        border: 2px solid orangered;
+    }
+    
+    .lobby-join-prefs-option.any {
+        background: yellow;
+        background: -moz-linear-gradient(left, black 0%, white 50%);
+        background: -webkit-linear-gradient(left, black 0%, white 50%);
+        background: linear-gradient(to right, black 0%, white 50%);
+    }
+    
+    .lobby-join-prefs-option.white {
+        background: white;
+    }
+    
+    .lobby-join-prefs-option.black {
+        background-color: black;
+    }
+    
+    .lobby-join-button {
+        width: 50%;
+        margin: auto;
+        border: 1px solid black;
+        background: orangered;
+        padding: 1vmin;
+        text-align: center;
+    }
