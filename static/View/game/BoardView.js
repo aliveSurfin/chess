@@ -2,6 +2,7 @@ import ViewHelpers from '../ViewHelpers.js'
 import SquareView from './SquareView.js'
 import ChessHelpers from './ChessHelpers.js'
 import BoardLabelView from './BoardLabelView.js'
+import PromotionView from './PromotionView.js'
 export default class BoardView {
     constructor(moveFunction) {
         this.moveFunction = moveFunction
@@ -18,6 +19,10 @@ export default class BoardView {
         console.log(this.state);
         if (this.grid == undefined) {
             this.createGrid()
+        }
+        if (this.promotion == undefined) {
+            this.promotion = new PromotionView(this.state.playerColour)
+            this.boardContainer.appendChild(this.promotion.promotionContainer)
         }
         this.addPieces()
     }
@@ -60,7 +65,7 @@ export default class BoardView {
                     (source, target) => { return this.move(source, target) },
                     selectionCallbacks)
                 row.appendChild(curSquare.squareContainer)
-                    // rowAR.push(curSquare)
+                // rowAR.push(curSquare)
                 this.grid[y][x] = curSquare
             }
             row.appendChild(new BoardLabelView((8 + 1) - (y + 1)))
@@ -74,13 +79,16 @@ export default class BoardView {
         let min = this.state.playerColour == "black" ? 7 : 0
         let max = this.state.playerColour == "black" ? -1 : 8
         let increment = this.state.playerColour == "black" ? -1 : 1
+        console.log("state", this.state);
         console.log(this.state.board);
         console.log(this.state.playerColour);
         for (let y = min; y != max; y += increment) {
             for (let x = min; x != max; x += increment) {
                 // for (let y = 0; y < 8; y++) {
                 //     for (let x = 0; x < 8; x++) {
-                this.grid[y][x].updatePiece(this.state.board[y][x], { y, x })
+                let isPiece = this.state.curColour[0] == this.state.board[y][x]?.color && this.state.board[y][x]?.type == "k"
+                let isCheck = this.state.inCheck || this.state.inCheckMate
+                this.grid[y][x].updatePiece(this.state.board[y][x], { y, x }, isCheck && isPiece ? true : false)
             }
         }
     }
@@ -97,7 +105,7 @@ export default class BoardView {
         return (this.state.curColour == this.state.playerColour)
     }
 
-    move(source, target) {
+    async move(source, target) {
         let targetSAN = ChessHelpers.coordToNotation(target.x, target.y)
         console.log(targetSAN);
         console.log(source);
@@ -108,7 +116,25 @@ export default class BoardView {
         if (moveIndex == -1) {
             return false
         }
-        console.log(this.grid[source.y][source.x]);
+        //TODO: check flags
+        let flags = this.state.board[source.y][source.x].moves[moveIndex].flags
+        console.log(flags);
+        if (flags.length == 1 && flags[0] != 1) {
+
+        }
+        //TODO: if promotion add promise to display piece screen
+        console.log("waiting");
+        let result = null
+        if (flags.includes('p')) {
+            await this.promotionListener().then((e) => {
+                result = e.target.value
+            })
+        }
+
+        if (result === false) {
+            return false
+        }
+        
         this.grid[source.y][source.x].removePiece()
         this.grid[target.y][target.x].updatePiece(
             this.state.board[source.y][source.x],
@@ -116,11 +142,23 @@ export default class BoardView {
         )
         this.state.curColour = "white" ? "black" : "white"
         console.log("move made");
-        this.moveFunction(source, target)
+        this.moveFunction(source, target, result)
         return true
 
     }
-
+    async promotionListener(element, listenerName) {
+        this.promotion.show()
+        let that = this
+        return new Promise(function (resolve, reject) {
+            var listener = event => {
+                // element.removeEventListener(listenerName, listener);
+                resolve(event);
+                that.promotion.hide()
+            };
+            // element.addEventListener(listenerName, listener);
+            that.promotion.attatchListeners(listener)
+        });
+    }
     selectionUnHighlighting() {
 
         if (this.selected == null) {
@@ -139,7 +177,7 @@ export default class BoardView {
         }
         this.grid[this.selected.piece.y][this.selected.piece.x].select()
         this.selected.moves.forEach((e) => {
-            this.grid[e.y][e.x].highlight()
+            this.grid[e.y][e.x].highlight(e.flags)
         })
     }
     selectionUpdate(newSelection) {
@@ -163,7 +201,11 @@ export default class BoardView {
             moves: []
         }
         this.selected.moves = this.state.board[newSelection.y][newSelection.x].moves.map((e) => {
-            return ChessHelpers.notationToCoord(e.to)
+            let move = ChessHelpers.notationToCoord(e.to)
+
+            move.flags = [...e.flags.split('')]
+            console.log('move generation', move.flags);
+            return move
         })
     }
 }

@@ -42,6 +42,10 @@ export default class LobbyView {
             let element = lobbyList[lobbyPlayer]
             this.lobbyList.appendChild(new LobbyItemView(element, this.challengeCallback, this.player.id))
         }
+        console.log();
+        if (!Object.entries(lobbyList).length) {
+            this.lobbyList.innerText = `No players in lobby...`
+        }
 
     }
 }

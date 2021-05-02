@@ -62,6 +62,10 @@ export default class SquareView {
             } else {
                 this.selectionCallbacks.selectionUnHighlighting()
                 this.selectionCallbacks.selectionUpdate(null)
+                if (selected != null && selected.piece.x == this.state.x && selected.piece.y == this.state.y) {
+                    console.log(selected);
+                    return
+                }
                 let newSelection = {
                     y: this.state.y,
                     x: this.state.x,
@@ -73,13 +77,23 @@ export default class SquareView {
         }
     }
 
-    updatePiece(pieceData, coord) {
+    updatePiece(pieceData, coord, check) {
         this.removePiece()
+        this.setCheck(check)
         if (pieceData == null) {
             return
         }
         this.piece = new PieceView(pieceData, coord, this.isPlayerMoveFunction, this.selectionCallbacks)
         this.squareContainer.appendChild(this.piece.element)
+    }
+    setCheck(isCheck) {
+        if (isCheck) {
+            if (!this.squareContainer.classList.contains('check')) {
+                this.squareContainer.classList.add('check')
+            }
+        } else {
+            this.squareContainer.classList.remove('check')
+        }
     }
 
     removePiece() {
@@ -87,12 +101,17 @@ export default class SquareView {
         this.piece = null
         this.squareContainer.textContent = ''
     }
-    highlight() {
-        if (this.squareContainer.childNodes.length) {
+    highlight(flags) {
+        console.log(flags);
+        console.log(this.squareContainer.classList);
+        if (flags.includes('c') || flags.includes('e')) { // contains a piece or 
+            console.log('c/e', this.squareContainer);
             this.squareContainer.classList.add('attacked')
         } else {
+            console.log('else', this.squareContainer);
             this.squareContainer.classList.add('possible')
         }
+        console.log(this.squareContainer.classList);
     }
     unHighlight() {
         this.squareContainer.classList.remove('possible')

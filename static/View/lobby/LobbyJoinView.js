@@ -16,7 +16,9 @@ export default class LobbyJoinView {
             if (e == this.selected) {
                 option.classList.add('selected')
             }
-            option.innerText = e
+            let span = ViewHelpers.createElementWithClassName('span', 'lobby-join-prefs-option-label')
+            span.innerText = e
+            option.appendChild(span)
             option.value = e
             option.onclick = () => {
                 this.selected = e

@@ -45,11 +45,11 @@
 }
 
 .square-container.white {
-    background-color: white;
+    background-color: tan;
 }
 
 .square-container.black {
-    background-color: gray;
+    background-color: maroon;
 }
 
 .square-container .piece {
@@ -60,12 +60,17 @@
     left: 50%;
     margin-right: -50%;
     transform: translate(-50%, -50%);
-    cursor: pointer;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    user-select: none;
+    cursor: move;
+    /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+.square-container .piece:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
 }
 
 .square-container.possible:after {
@@ -93,6 +98,17 @@
     box-shadow: 0px 0px 0px 2000px rgb(255, 100, 100, 0.75);
 }
 
+.square-container.check::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(red, transparent);
+    /* background: red; */
+}
+
 .square-container.selected::before {
     content: '';
     position: absolute;
@@ -113,4 +129,48 @@
     text-align: center;
     font-size: 3vmin;
     font-weight: bolder;
+}
+
+.promotion-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 5;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.promotion-row-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1vmin 0 1vmin 0;
+}
+
+.promotion-piece {
+    background: orangered;
+    border: 1vmin solid orangered;
+    padding: 2vmin;
+    z-index: 6;
+    width: 10vmin;
+    height: 10vmin;
+    border-radius: 5%;
+    margin: 2vmin;
+}
+
+.promotion-piece:hover {
+    border: 1vmin solid black;
+}
+
+.promotion-label {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1vmin 0 1vmin 0;
+    text-align: center;
+    font-size: 3vmin;
+    font-weight: 900;
 }

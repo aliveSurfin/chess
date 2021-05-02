@@ -9,6 +9,7 @@
     .lobby-list-container {
         overflow-x: hidden;
         overflow-y: auto;
+        text-align: center;
     }
     
     .lobby-item {
@@ -69,10 +70,16 @@
     }
     
     .lobby-join-prefs-option {
-        border: 1px solid black;
+        display: flex;
+        align-items: center;
+        border: 2px solid black;
         text-align: center;
         text-transform: capitalize;
         color: orangered
+    }
+    
+    .lobby-join-prefs-option-label {
+        width: 100%;
     }
     
     .lobby-join-prefs-option.selected {

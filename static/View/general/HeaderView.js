@@ -11,6 +11,6 @@ export default class HeaderView {
         this.headerContainer.appendChild(this.playerName)
     }
     addPlayerName(playerName) {
-        this.playerName.innerText = playerName
+        this.playerName.innerText = playerName + ``
     }
 }

@@ -36,8 +36,8 @@ export default class ClientController {
                 challenge: (e) => { this.challenge(e) },
             }
             let gameCallbacks = {
-                moveFunction: (source, target) => {
-                    this.move(source, target)
+                moveFunction: (source, target, promotion) => {
+                    this.move(source, target, promotion)
                 }
             }
             this.clientView.playerJoinedSuccessfully(player, lobbyCallbacks, gameCallbacks)
@@ -53,9 +53,9 @@ export default class ClientController {
     challenge(id) {
         console.log("challenge: ", id);
     }
-    move(source, target) {
+    move(source, target, promotion) {
         console.log("move hit");
-        this.socket.emit('move', { source: source, target: target })
+        this.socket.emit('move', { source: source, target: target, promotion: promotion })
     }
 
 
