@@ -58,7 +58,7 @@ io.on('connection', function(socket) {
     socket.on('disconnect', () => {
         console.log("user disconnect", socket.id);
         if (!(socket.id in state.players)) {
-            console.log("error");
+            console.log("error: player already disconnected");
             //todo: error handling
             return
         }
@@ -84,15 +84,11 @@ io.on('connection', function(socket) {
             //player has game but not in games
             return
         }
-        //TODO: valid move checking
+
         let curGame = state.games[state.players[socket.id].game]
-            // console.log(curGame);
-            // console.log(Object.keys(curGame));
-            // console.log(Object.values(curGame));
-            // console.log(socket.id);
-            // console.log(Object.values(curGame).indexOf(socket.id));
+
         let playerColour = Object.keys(curGame)[Object.values(curGame).indexOf(socket.id)]
-            //console.log(playerColour);
+
         console.log(playerColour);
         console.log(curGame.curColour);
         if (playerColour != curGame.curColour) {
@@ -110,13 +106,10 @@ io.on('connection', function(socket) {
         }
         let moveReturn = state.games[state.players[socket.id].game].game.move(moveObj)
         if (moveReturn == null) {
-            console.log("invalid move");
+            console.log("invalid move made by :", state.players[socket.id]);
             io.to(socket.id).emit('updated board', createGameState(state.games[state.players[socket.id].game], socket.id, 'Invalid move made'), )
             return
         }
-        //TODO valid move check
-        console.log(source);
-        console.log(target);
 
         let oppPlayer = (curGame.white == curGame[playerColour] ? curGame.black : curGame.white)
         state.games[state.players[socket.id].game].curColour = playerColour == "white" ? "black" : "white"
@@ -135,7 +128,10 @@ io.on('connection', function(socket) {
         }
         console.log(state.lobby);
         state.lobby[id] = lobbyItem
-            //TODO: make class
+    }
+
+    function removeFromLobby(id) {
+        delete state.lobby[id]
     }
 
     function validatePrefs(prefs) {
@@ -152,21 +148,29 @@ io.on('connection', function(socket) {
 
     }
     socket.on('join lobby', (prefs) => {
-        //TODO: pref checking
-        //TODO: check if player exists 
-        //TODO: check if player is in game
-        //TODO: check if player is in lobby
-        console.log(state.lobby);
-        console.log(prefs);
+
+        if (!socket.id in state.players) {
+            console.log("player with id: ", socket.id, " does not exist ")
+            return
+        }
+        if ("game" in state.players[socket.id]) {
+            console.log("player ", state.players[socket.id], " is already in game")
+            return
+        }
+        if (socket.id in state.lobby) {
+            removeFromLobby(socket.id)
+            console.log("player ", state.players[socket.id], " is already in lobby ... removing ")
+        }
+
         prefs = { colour: validatePrefs(prefs) }
-        console.log(prefs);
-        console.log("test");
+
+
         if (!Object.keys(state.lobby).length) {
             addToLobby(socket.id, prefs)
             io.emit("lobby list", state.lobby)
             return
         }
-        //state.lobby[socket.id] = prefs
+
         let selectedOpponent = null
         if (prefs.colour == "any") {
             let keys = Object.keys(state.lobby);
@@ -176,19 +180,25 @@ io.on('connection', function(socket) {
             for (pl in state.lobby) {
                 if (state.lobby[pl].prefs.colour != prefs.colour) {
                     selectedOpponent = pl
-                    console.log("aa");
                     possible = true
                     break;
                 }
             }
             if (!possible) {
                 addToLobby(socket.id, prefs)
-                console.log("not possible");
                 io.emit("lobby list", state.lobby)
                 return
             }
 
         }
+        let oppPrefs = state.lobby[selectedOpponent].prefs
+        let opponent = { id: selectedOpponent, prefs: oppPrefs }
+        let player = { id: socket.id, prefs: prefs }
+        createGame(player, opponent)
+
+    })
+
+    function createGame(player1, player2) {
         let game = {
             white: "",
             black: "",
@@ -196,54 +206,92 @@ io.on('connection', function(socket) {
             curColour: "white",
         }
 
-        let oppPrefs = state.lobby[selectedOpponent].prefs
-        console.log("oppPrefs", oppPrefs);
-
-        game.white = prefs.colour == "white" ? socket.id : oppPrefs.colour == "white" ? selectedOpponent : ""
-        game.black = prefs.colour == "black" ? socket.id : oppPrefs.colour == "black" ? selectedOpponent : ""
-        console.log(game.white);
-        console.log(game.black);
+        game.white = player1.prefs.colour == "white" ? player1.id : player2.prefs.colour == "white" ? player2.id : ""
+        game.black = player1.prefs.colour == "black" ? player1.id : player2.prefs.colour == "black" ? player2.id : ""
         if (game.white == "" && game.black == "") {
 
             if (Math.round(Math.random()) == 1) {
-                game.white = socket.id
-                game.black = selectedOpponent
+                game.white = player1.id
+                game.black = player2.id
             } else {
-                game.white = selectedOpponent
-                game.black = socket.id
+                game.white = player2.id
+                game.black = player1.id
             }
 
         } else if (game.white == "") {
-            game.white = game.black == socket.id ? selectedOpponent : socket.id
+            game.white = game.black == player1.id ? player2.id : player1.id
         } else if (game.black == "") {
-            game.black = game.white == socket.id ? selectedOpponent : socket.id
+            game.black = game.white == player1.id ? player2.id : player1.id
         }
-        console.log(game);
-        // return
-        // console.log(Object.keys(state.lobby))
-        // //TODO: pref checking
+
         let uuid = uuidv4()
         while (uuid in state.games) {
             uuid = uuidv4() // should not be needed
         }
-        //let selectedOpponent = state.lobby[Object.keys(state.lobby)[0]]
-        state.players[selectedOpponent].game = uuid
-        state.players[socket.id].game = uuid
+
+        state.players[player2.id].game = uuid
+        state.players[player1.id].game = uuid
 
         state.games[uuid] = game
-        delete state.lobby[selectedOpponent]
-        let fen = game.game.fen()
-        io.to(socket.id).emit('game started', createGameState(game, socket.id))
-        io.to(selectedOpponent).emit('game started', createGameState(game, selectedOpponent))
 
-        console.log(game.curColour);
+        io.to(player1.id).emit('game started', createGameState(game, player1.id))
+        io.to(player2.id).emit('game started', createGameState(game, player2.id))
+        removeFromLobby(player1.id)
+        removeFromLobby(player2.id)
+        console.log("Game Created for :", player1, player2);
+        io.emit("lobby list", state.lobby)
+    }
+    socket.on('challenge', (playerChallenge) => {
+        if (!playerChallenge in state.lobby) {
+            console.log('Player with id ', playerChallenge, 'is not in lobby');
+            io.to(socket.id).emit("lobby list", state.lobby)
+            return
+        }
+        let player1 = { id: socket.id, prefs: { colour: "any" } }
+        let player2 = { id: state.lobby[playerChallenge].id, prefs: state.lobby[playerChallenge].prefs }
+        createGame(player1, player2)
+
+    })
+    socket.on('req lobby', () => {
+        io.to(socket.id).emit("lobby list", state.lobby)
+    })
+    socket.on('exit lobby', () => {
+        removeFromLobby(socket.id)
         io.emit("lobby list", state.lobby)
 
     })
 
+    socket.on('resign', () => {
+        //TODO: check if in game
+        if (!socket.id in state.players) {
+            console.log("player with id: ", socket.id, " does not exist ")
+            return
+        }
+        if (!"game" in state.players[socket.id]) {
+            console.log("player ", state.players[socket.id], " is not in a game")
+            return
+        }
+        if (!state.players[socket.id].game in state.games) {
+            console.log("game : ", state.players[socket.id].game, " does not exist ")
+            return
+        }
+        console.log("resign from", state.players[socket.id]);
+        let opponent = getOpponent(socket.id)
 
+        socket.to(opponent).emit("opponent resign")
+
+    })
+
+    socket.on('offer draw', () => {
+        console.log("draw from", state.players[socket.id]);
+
+    })
 
 })
+
+function getOpponent(id) {
+    return state.games[state.players[id].game].white == id ? state.games[state.players[id].game].black : state.games[state.players[id].game].white
+}
 
 function createGameState(game, player, status) {
     let board = game.game.board()
@@ -261,16 +309,16 @@ function createGameState(game, player, status) {
         board: board,
         curColour: game.curColour,
         playerColour: game.white == player ? "white" : "black",
+        opponentName: game.white == player ? state.players[game.black].name : state.players[game.white].name,
         gameOver: game.game.game_over(),
         inCheck: game.game.in_check(),
         inCheckmate: game.game.in_checkmate(),
         inDraw: game.game.in_draw(),
+        moveHistory: game.game.history({ verbose: true })
 
 
 
     }
-    gameState.status = status == undefined ?
-        (gameState.playerColour == gameState.curColour ? 'Your turn to make a move' : 'Wait for your turn') : status
     return gameState
 
 }

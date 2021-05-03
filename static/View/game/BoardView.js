@@ -4,8 +4,8 @@ import ChessHelpers from './ChessHelpers.js'
 import BoardLabelView from './BoardLabelView.js'
 import PromotionView from './PromotionView.js'
 export default class BoardView {
-    constructor(moveFunction) {
-        this.moveFunction = moveFunction
+    constructor(callbacks) {
+        this.moveFunction = callbacks.moveFunction
         this.createBoardElement()
     }
     createBoardElement() {
@@ -25,6 +25,7 @@ export default class BoardView {
             this.boardContainer.appendChild(this.promotion.promotionContainer)
         }
         this.addPieces()
+
     }
     createGrid() {
         this.grid = [...Array(8)].map(x => Array(8).fill(null))
@@ -116,14 +117,8 @@ export default class BoardView {
         if (moveIndex == -1) {
             return false
         }
-        //TODO: check flags
         let flags = this.state.board[source.y][source.x].moves[moveIndex].flags
-        console.log(flags);
-        if (flags.length == 1 && flags[0] != 1) {
 
-        }
-        //TODO: if promotion add promise to display piece screen
-        console.log("waiting");
         let result = null
         if (flags.includes('p')) {
             await this.promotionListener().then((e) => {
@@ -134,7 +129,7 @@ export default class BoardView {
         if (result === false) {
             return false
         }
-        
+
         this.grid[source.y][source.x].removePiece()
         this.grid[target.y][target.x].updatePiece(
             this.state.board[source.y][source.x],
@@ -146,16 +141,14 @@ export default class BoardView {
         return true
 
     }
-    async promotionListener(element, listenerName) {
+    async promotionListener() {
         this.promotion.show()
         let that = this
         return new Promise(function (resolve, reject) {
             var listener = event => {
-                // element.removeEventListener(listenerName, listener);
                 resolve(event);
                 that.promotion.hide()
             };
-            // element.addEventListener(listenerName, listener);
             that.promotion.attatchListeners(listener)
         });
     }

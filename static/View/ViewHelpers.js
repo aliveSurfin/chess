@@ -7,5 +7,10 @@ export default class ViewHelpers {
         }
         return element
     }
+    static removeChildren(element) {
+        while (element.firstChild) {
+            element.removeChild(element.lastChild);
+        }
+    }
 
 }

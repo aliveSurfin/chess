@@ -24,6 +24,25 @@ body {
 
 .footer-container {
     background-color: gray;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-container>* {
+    margin: 1vmin;
+    color: white;
+    font-weight: 900;
+}
+
+.footer-github-container {
+    cursor: pointer;
+}
+
+.footer-github-image {
+    width: auto;
+    height: 5vmin;
 }
 
 .header-container {
@@ -39,8 +58,8 @@ body {
 
 .header-player-name {
     float: right;
-    font-size: 2vmin;
-    color: orangered;
+    font-size: 3vmin;
+    color: limegreen;
     background-color: black;
     padding: 1vmin;
     border-radius: 5%;

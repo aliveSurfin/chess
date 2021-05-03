@@ -1,11 +1,12 @@
 import ViewHelpers from '../ViewHelpers.js'
 console.log(ViewHelpers);
 export default class LobbyJoinView {
-    constructor(joinCallback) {
-        return this.createLobbyJoinElement(joinCallback)
+    constructor(joinExitCallback) {
+        console.log(joinExitCallback);
+        return this.createLobbyJoinElement(joinExitCallback)
     }
 
-    createLobbyJoinElement(callback) {
+    createLobbyJoinElement(joinExitCallback) {
         let element = ViewHelpers.createElementWithClassName('div', 'lobby-join-container')
         let values = ['any', 'white', 'black']
         this.valueElements = []
@@ -33,13 +34,25 @@ export default class LobbyJoinView {
             this.valueElements.push(option)
         })
 
-        let joinButton = ViewHelpers.createElementWithClassName('div', 'lobby-join-button')
-        joinButton.innerText = "Join"
-        joinButton.onclick = () => { callback(this.selected) }
+        let joinExitButton = ViewHelpers.createElementWithClassName('div', 'lobby-join-exit-button')
+        joinExitButton.innerText = "Join Lobby"
+        console.log(joinExitCallback);
+        let joinFunc = () => {
+            joinExitCallback(this.selected)
+            joinExitButton.innerText = "Leave Lobby"
+            joinExitButton.onclick = exitFunc
+        }
+        let exitFunc = () => {
+            joinExitCallback(null)
+            joinExitButton.innerText = "Join Lobby"
+            joinExitButton.onclick = joinFunc
+        }
+        joinExitButton.onclick = joinFunc
+
 
 
         element.appendChild(select)
-        element.appendChild(joinButton)
+        element.appendChild(joinExitButton)
 
 
         return element

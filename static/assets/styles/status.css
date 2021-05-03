@@ -1,10 +1,138 @@
 .status-container {
+    background: gray;
+    border: 1px solid black;
+    border-radius: 1vmin;
+    padding: 1vmin;
+    margin-top: 4vmin;
+    margin-bottom: 4vmin;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.status-player-name {
+    width: auto;
+    background: black;
+    color: red;
+    padding: 1vmin;
+    border-radius: 1vmin;
+    font-weight: 800;
+}
+
+.status-player-name::before {
+    content: "\2694";
+    margin-right: 1%;
+}
+
+.status-title {
+    font-weight: 700;
+}
+
+.status-description {
+    border: 2px solid black;
+    border-radius: 2%;
+    background: white;
+}
+
+.status-move-list {
     border: 1px solid black;
     display: grid;
-    grid-template-rows: 1fr 3fr;
+    grid-template-columns: 1fr 1fr;
+    max-height: 60%;
+    overflow-y: scroll;
+    margin-top: 1%;
+}
+
+.status-move-list-move {
+    margin-right: 5%;
+    margin-left: 5%;
+}
+
+.status-move-list-move {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    align-content: center;
+}
+
+.status-move-list-move-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.status-move-list-move-label,
+.status-move-list-move-description {
+    display: inline-flex;
+    align-items: center;
+}
+
+.status-piece {
+    width: 100%;
+}
+
+.status-resign-draw-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 1vmin;
+}
+
+.status-resign-draw-container>* {
+    background: orangered;
+    border: 1vmin solid orangered;
+    margin-left: 1vmin;
+    margin-right: 1vmin;
     padding: 1vmin;
 }
 
-.move-list {
-    border: 1px solid black;
+.status-resign-draw-container>*:hover {
+    border: 1vmin solid black;
+}
+
+.confirm-container {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 5;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.confirm-row-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1vmin 0 1vmin 0;
+}
+
+.confirm-piece {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    background: orangered;
+    border: 1vmin solid orangered;
+    padding: 2vmin;
+    z-index: 6;
+    width: 10vmin;
+    height: 10vmin;
+    border-radius: 5%;
+    margin: 2vmin;
+}
+
+.confirm-piece:hover {
+    border: 1vmin solid black;
+}
+
+.confirm-label {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1vmin 0 1vmin 0;
+    text-align: center;
+    font-size: 3vmin;
+    font-weight: 900;
 }

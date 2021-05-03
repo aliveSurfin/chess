@@ -20,6 +20,20 @@
         padding: 1vmin;
     }
     
+    .lobby-list-legend-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        border-bottom: .5vmin groove black;
+        margin-bottom: 1vmin;
+    }
+    
+    .lobby-list-legend-container>* {
+        border-right: 2px solid black;
+        font-weight: 900;
+        font-size: 4vmin;
+        text-align: center;
+    }
+    
     .lobby-item.own {
         border: 2px solid orangered;
         background: orange;
@@ -75,7 +89,8 @@
         border: 2px solid black;
         text-align: center;
         text-transform: capitalize;
-        color: orangered
+        color: orangered;
+        font-weight: 800;
     }
     
     .lobby-join-prefs-option-label {
@@ -101,11 +116,15 @@
         background-color: black;
     }
     
-    .lobby-join-button {
-        width: 50%;
+    .lobby-join-exit-button {
+        width: auto;
         margin: auto;
-        border: 1px solid black;
+        border: 0.5vmin solid orangered;
         background: orangered;
         padding: 1vmin;
         text-align: center;
+    }
+    
+    .lobby-join-exit-button:hover {
+        border: 0.5vmin solid black;
     }

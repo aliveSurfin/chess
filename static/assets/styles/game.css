@@ -1,5 +1,5 @@
 .game-container {
-    height: 100%;
+    height: auto;
     display: flex;
     flex-direction: row;
     padding: 1vmin;
@@ -7,8 +7,8 @@
 }
 
 .status-container {
-    width: 20vmin;
-    text-align: center;
+    width: 30vw;
+    max-height: 64vh;
 }
 
 @media only screen and (max-width: 800px) {
@@ -132,7 +132,7 @@
 }
 
 .promotion-container {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;

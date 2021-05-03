@@ -6,7 +6,7 @@ import ViewHelpers from "./ViewHelpers.js"
 
 export default class ClientView {
 
-    constructor(gameCallbacks) {
+    constructor() {
         this.createClientView()
 
     }
@@ -28,11 +28,14 @@ export default class ClientView {
     }
     playerJoinedSuccessfully(player, lobbyCallbacks, gameCallbacks) {
         this.lobbyCallbacks = lobbyCallbacks
+        gameCallbacks.switchToLobby = () => {
+            this.lobbyView.show()
+        }
         this.gameCallbacks = gameCallbacks
         console.log(this.mainContainer);
 
         this.header.addPlayerName(player.name)
-        this.lobbyView = new LobbyView(this.lobbyCallbacks.challenge, this.lobbyCallbacks.joinLobby, player, this.mainContainer)
+        this.lobbyView = new LobbyView(this.lobbyCallbacks.lobbyRequest, this.lobbyCallbacks.challenge, this.lobbyCallbacks.joinExitLobby, player, this.mainContainer)
         this.lobbyView.show()
 
         this.gameView = new GameView(this.mainContainer, this.gameCallbacks)

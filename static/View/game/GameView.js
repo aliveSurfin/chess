@@ -10,8 +10,8 @@ export default class GameView {
     }
     createGameElement() {
         this.gameContainer = ViewHelpers.createElementWithClassName('div', 'game-container')
-        this.statusView = new StatusView()
-        this.boardView = new BoardView(this.gameCallbacks.moveFunction)
+        this.statusView = new StatusView(this.gameCallbacks)
+        this.boardView = new BoardView(this.gameCallbacks)
         this.gameContainer.appendChild(this.boardView.boardContainer)
         this.gameContainer.appendChild(this.statusView.statusContainer)
     }
@@ -24,6 +24,6 @@ export default class GameView {
     }
     startGame(gameState) {
         this.boardView.updateGameState(gameState)
-        this.statusView.updateStatus(gameState.status)
+        this.statusView.updateStatus(gameState)
     }
 }
