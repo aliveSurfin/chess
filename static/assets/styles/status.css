@@ -32,6 +32,7 @@
     border: 2px solid black;
     border-radius: 2%;
     background: white;
+    height: auto;
 }
 
 .status-move-list {

@@ -59,7 +59,7 @@ export default class StatusView {
         this.statusContainer.appendChild(this.confimView.confirmContainer)
     }
     updateStatus(gameState) {
-
+        this.state = gameState
         this.opponentName.innerText = gameState.opponentName
 
         this.updateDescription(gameState)
@@ -119,16 +119,38 @@ export default class StatusView {
             that.confimView.attatchListeners(listener, "Are you sure you want to offer a draw?")
         });
     }
+    async drawOfferReceived(reason) {
+        let result = null
+        await this.drawAcceptListener(reason).then((e) => {
+            result = e.target.value
+        })
+        if (result == "Yes") {
+            this.acceptDraw(true)
+
+        } else {
+            this.acceptDraw(false)
+        }
+    }
+    async drawAcceptListener() {
+        this.confimView.show()
+        let that = this
+        return new Promise(function(resolve, reject) {
+            var listener = event => {
+                resolve(event);
+                that.confimView.hide()
+            };
+            that.confimView.attatchListeners(listener, "Would you like to accept a draw?")
+        });
+    }
     async gameOver(reason) {
         let result = null
         await this.restartListener(reason).then((e) => {
             result = e.target.value
         })
         if (result == "Yes") {
-            this.switchToLobby()
-                //TODO: switch to lobby and rejoin lobby
+            this.switchToLobby(this.state.playerColour || "any")
         } else {
-            //TODO: switch to lobby
+            this.switchToLobby()
         }
     }
     async restartListener(reason) {

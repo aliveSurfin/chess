@@ -278,19 +278,76 @@ io.on('connection', function(socket) {
         console.log("resign from", state.players[socket.id]);
         let opponent = getOpponent(socket.id)
 
-        socket.to(opponent).emit("opponent resign")
+        io.to(opponent).emit("opponent resign")
+        deleteGame(socket.id)
 
     })
 
     socket.on('offer draw', () => {
-        console.log("draw from", state.players[socket.id]);
+        if (!socket.id in state.players) {
+            console.log("player with id: ", socket.id, " does not exist ")
+            return
+        }
+        if (!"game" in state.players[socket.id]) {
+            console.log("player ", state.players[socket.id], " is not in a game")
+            return
+        }
+        if (!state.players[socket.id].game in state.games) {
+            console.log("game : ", state.players[socket.id].game, " does not exist ")
+            return
+        }
+        let opponent = getOpponent(socket.id)
 
+        io.to(opponent).emit("draw offer")
+    })
+
+    socket.on('accept draw', (result) => {
+        console.log('draw', result);
+        if (!result) {
+            return
+        }
+        if (!socket.id in state.players) {
+            console.log("player with id: ", socket.id, " does not exist ")
+            return
+        }
+        if (!"game" in state.players[socket.id]) {
+            console.log("player ", state.players[socket.id], " is not in a game")
+            return
+        }
+        if (!state.players[socket.id].game in state.games) {
+            console.log("game : ", state.players[socket.id].game, " does not exist ")
+            return
+        }
+        let opponent = getOpponent(socket.id)
+        console.log("drawing", opponent, socket.id);
+        deleteGame(socket.id)
+        io.to(opponent).emit("game draw")
+        io.to(socket.id).emit("game draw")
     })
 
 })
 
 function getOpponent(id) {
     return state.games[state.players[id].game].white == id ? state.games[state.players[id].game].black : state.games[state.players[id].game].white
+}
+
+function deleteGame(playerID) {
+    if (!playerID in state.players) {
+        return
+    }
+    if (!"game" in state.players[playerID]) {
+        return
+    }
+    if (!state.players[playerID].game in state.games) {
+        return
+    }
+    let game = state.games[state.players[playerID].game]
+    let player1 = game.white
+    let player2 = game.black
+
+    delete state.games[state.players[playerID].game]
+    delete state.players[player1]["game"]
+    delete state.players[player2]["game"]
 }
 
 function createGameState(game, player, status) {

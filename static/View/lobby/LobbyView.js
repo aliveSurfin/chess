@@ -14,11 +14,15 @@ export default class LobbyView {
         console.log(parent);
         this.createLobbyElement()
     }
-    show() {
+    show(prefs) {
+
         this.hide()
         this.createLobbyElement()
         this.lobbyRequest()
         this.parent.appendChild(this.lobbyContainer)
+        if (prefs !== undefined) {
+            this.joinExitCallback(prefs)
+        }
     }
     hide() {
         this.parent.innerHTML = ''
@@ -30,8 +34,8 @@ export default class LobbyView {
         let lobbyListContainer = ViewHelpers.createElementWithClassName('div', 'lobby-list-container')
         this.lobbyList = document.createElement('div', 'lobby-list')
         lobbyListContainer.appendChild(this.lobbyList)
-
-        let joinLobbyContainer = new LobbyJoinView(this.joinExitCallback)
+        this.joinLobby = new LobbyJoinView(this.joinExitCallback)
+        let joinLobbyContainer = this.joinLobby.element
 
         this.lobbyContainer.appendChild(lobbyListContainer)
 

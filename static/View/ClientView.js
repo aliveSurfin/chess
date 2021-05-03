@@ -28,8 +28,8 @@ export default class ClientView {
     }
     playerJoinedSuccessfully(player, lobbyCallbacks, gameCallbacks) {
         this.lobbyCallbacks = lobbyCallbacks
-        gameCallbacks.switchToLobby = () => {
-            this.lobbyView.show()
+        gameCallbacks.switchToLobby = (prefs) => {
+            this.lobbyView.show(prefs)
         }
         this.gameCallbacks = gameCallbacks
         console.log(this.mainContainer);

@@ -47,14 +47,13 @@ export default class ClientController {
                 offerDraw: () => {
                     this.offerDraw()
                 },
-                acceptDraw: () => {
-                    this.acceptDraw()
+                acceptDraw: (result) => {
+                    this.acceptDraw(result)
                 }
 
 
             }
             this.clientView.playerJoinedSuccessfully(player, lobbyCallbacks, gameCallbacks)
-                //TODO: call update player name in client view
 
 
         })
@@ -68,7 +67,11 @@ export default class ClientController {
             this.clientView.gameView.statusView.gameOver("Oponnent Resigned")
         })
         this.socket.on('draw offer', () => {
-
+            this.clientView.gameView.statusView.drawOfferReceived('Would you like to accept a draw?')
+        })
+        this.socket.on('game draw', () => {
+            console.log("got draw");
+            this.clientView.gameView.statusView.gameOver('Game accepted as draw')
         })
     }
     joinExitLobby(prefs) {
@@ -90,12 +93,16 @@ export default class ClientController {
     }
     resign() {
         this.socket.emit('resign')
+        setTimeout(() => {
+            this.clientView.gameView.statusView.gameOver('You have resigned')
+        }, 200);
+
     }
     offerDraw() {
         this.socket.emit('offer draw')
     }
-    acceptDraw() {
-        this.socket.emit('accept draw')
+    acceptDraw(result) {
+        this.socket.emit('accept draw', result)
     }
 
 
